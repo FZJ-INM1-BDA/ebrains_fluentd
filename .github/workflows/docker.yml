@@ -1,0 +1,33 @@
+name: '[cd]docker images'
+
+on:
+  push:
+    branches:
+    - master
+
+env:
+  DOCKER_REGISTRY: 'docker-registry.ebrains.eu/monitoring/'
+  DOCKER_IMG: 'fluentd'
+  DOCKER_IMAGE_TAG: 'v1.16-1-elastiksearch-loki'
+
+jobs:
+  build-docker-img:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: "Build docker image"
+      run: |
+        docker build -t docker-img .
+
+    - name: "Tag and Push"
+      run: |
+        NEW_TAG=${{ env.DOCKER_REGISTRY }}${{ env.DOCKER_IMG }}:${{ env.DOCKER_IMAGE_TAG }}
+        docker tag docker-img ${NEW_TAG}
+        
+        echo "Login to docker registry"
+        docker login \
+          -u '${{ secrets.EBRAINS_DOCKER_REG_USER }}' \
+          -p '${{ secrets.EBRAINS_DOCKER_REG_TOKEN }}' \
+          docker-registry.ebrains.eu
+        
+        docker push $NEW_TAG

@@ -15,9 +15,6 @@ RUN apk add --no-cache --update --virtual .build-deps \
  && apk del .build-deps \
  && rm -rf /tmp/* /var/tmp/* /usr/lib/ruby/gems/*/cache/*.gem
 
-COPY ./fluent.conf /etc/fluent/
-COPY entrypoint.sh /bin/
-
 USER fluent
 
 # Running plugins
